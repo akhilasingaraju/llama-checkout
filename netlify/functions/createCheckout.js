@@ -2,13 +2,16 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 // Map data-product-lid (from Tilda HTML) to Stripe Price IDs
 const PRICE_MAP = {
-  '1502117342481': 'price_1RoDF0AWyMUmnKu5gxhyOFk5', // Ratnagiri 6
-  '1497456130776': 'price_1RoX0zAWyMUmnKu5CHcm0jDD', // Odisha 12
-  '1753306324781': 'price_1RoX3mAWyMUmnKu5udLvtytF', // The Mango Drop
-  '1753307345199': 'price_1RoX2IAWyMUmnKu5g7IeEPo4', // Heritage Mango Fire
-  '1502116725033': 'price_1RoU1NAWyMUmnKu5ALa3ffJk', // Sunrise Preserve
-  '1753311223047': 'price_1RoDDNAWyMUmnKu5Nm0wmfqB', // Llama Magazine
-  '1753307678371': 'price_1RoX4uAWyMUmnKu5ES4CKCAC', // Mango Body Oil
+  // One-time purchase products (mode: 'payment')
+  '1502117342481': { priceId: 'price_1RoDF0AWyMUmnKu5gxhyOFk5', mode: 'payment' }, // Ratnagiri 6
+  '1497456130776': { priceId: 'price_1RoX0zAWyMUmnKu5CHcm0jDD', mode: 'payment' }, // Odisha 12
+  '1753307345199': { priceId: 'price_1RoX2IAWyMUmnKu5g7IeEPo4', mode: 'payment' }, // Heritage Mango Fire
+  '1502116725033': { priceId: 'price_1RoU1NAWyMUmnKu5ALa3ffJk', mode: 'payment' }, // Sunrise Preserve
+  '1753307678371': { priceId: 'price_1RoX4uAWyMUmnKu5ES4CKCAC', mode: 'payment' }, // Mango Body Oil
+
+  // Subscription products (mode: 'subscription')
+  '1753306324781': { priceId: 'price_1RoX3mAWyMUmnKu5udLvtytF', mode: 'subscription' }, // The Mango Drop
+  '1753311223047': { priceId: 'price_1RoDDNAWyMUmnKu5Nm0wmfqB', mode: 'subscription' }, // Llama Magazine
 };
 
 exports.handler = async (event, context) => {
