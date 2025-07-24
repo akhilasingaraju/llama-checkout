@@ -2,9 +2,9 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 // Map your product LIDs (from Tilda) to Stripe Price IDs
 const PRICE_MAP = {
-  '376328752612': 'price_1RoU1NAWyMUmnKu5ALa3ffJk', // example
-  '608434923522': 'price_1RoDF0AWyMUmnKu5gxhyOFk5',
-  '923338722632': 'price_1RoDDNAWyMUmnKu5Nm0wmfqB',
+  '608434923522': 'price_1RoDF0AWyMUmnKu5gxhyOFk5', // example
+  '889145261572': 'price_1RoDDNAWyMUmnKu5Nm0wmfqB',
+  '376328752612': 'price_1RoU1NAWyMUmnKu5ALa3ffJk',
   // Add more product LIDs and Stripe Price IDs here
 };
 
