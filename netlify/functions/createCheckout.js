@@ -1,14 +1,14 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-// Map your product LIDs (from Tilda) to Stripe Price IDs
+// Map data-product-lid (from Tilda HTML) to Stripe Price IDs
 const PRICE_MAP = {
-  '608434923522': 'price_1RoDF0AWyMUmnKu5gxhyOFk5', // Ratnagiri 6
-  '912790715332': 'price_1RoX0zAWyMUmnKu5CHcm0jDD', // Odisha 12
-  '889145261572': 'price_1RoX3mAWyMUmnKu5udLvtytF', // The Mango Drop
-  '867258767462': 'price_1RoX2IAWyMUmnKu5g7IeEPo4', // Heritage Mango Fire
-  '376328752612': 'price_1RoU1NAWyMUmnKu5ALa3ffJk', // Sunrise Preserve
-  '923338722632': 'price_1RoDDNAWyMUmnKu5Nm0wmfqB', // Llama Magazine
-  '198526285452': 'price_1RoX4uAWyMUmnKu5ES4CKCAC', // Mango Body Oil
+  '1502117342481': 'price_1RoDF0AWyMUmnKu5gxhyOFk5', // Ratnagiri 6
+  '1497456130776': 'price_1RoX0zAWyMUmnKu5CHcm0jDD', // Odisha 12
+  '1753306324781': 'price_1RoX3mAWyMUmnKu5udLvtytF', // The Mango Drop
+  '1753307345199': 'price_1RoX2IAWyMUmnKu5g7IeEPo4', // Heritage Mango Fire
+  '1502116725033': 'price_1RoU1NAWyMUmnKu5ALa3ffJk', // Sunrise Preserve
+  '1753311223047': 'price_1RoDDNAWyMUmnKu5Nm0wmfqB', // Llama Magazine
+  '1753307678371': 'price_1RoX4uAWyMUmnKu5ES4CKCAC', // Mango Body Oil
 };
 
 exports.handler = async (event, context) => {
@@ -27,17 +27,15 @@ exports.handler = async (event, context) => {
 
   try {
     const { productId, quantity } = JSON.parse(event.body);
-    console.log('🔥 Received productId:', productId);
-    console.log('🧮 Received quantity:', quantity);
+    console.info("🔥 Received productId:", productId);
+    console.info("🧮 Received quantity:", quantity);
 
     const priceId = PRICE_MAP[productId];
     if (!priceId) {
-      console.error('❌ Unknown productId:', productId);
+      console.error("❌ Unknown productId:", productId);
       return {
         statusCode: 400,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        },
+        headers: { 'Access-Control-Allow-Origin': '*' },
         body: JSON.stringify({ error: 'Unknown productId' }),
       };
     }
@@ -45,30 +43,24 @@ exports.handler = async (event, context) => {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card', 'link'],
       mode: 'payment',
-      line_items: [
-        {
-          price: priceId,
-          quantity: quantity || 1,
-        },
-      ],
+      line_items: [{
+        price: priceId,
+        quantity: quantity || 1,
+      }],
       success_url: 'https://project14002159.tilda.ws/thank-you',
       cancel_url: 'https://project14002159.tilda.ws/',
     });
 
     return {
       statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-      },
+      headers: { 'Access-Control-Allow-Origin': '*' },
       body: JSON.stringify({ url: session.url }),
     };
   } catch (error) {
-    console.error('💥 Stripe error:', error);
+    console.error('Stripe error:', error);
     return {
       statusCode: 500,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-      },
+      headers: { 'Access-Control-Allow-Origin': '*' },
       body: JSON.stringify({ error: error.message }),
     };
   }
