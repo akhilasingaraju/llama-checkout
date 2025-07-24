@@ -27,9 +27,12 @@ exports.handler = async (event, context) => {
 
   try {
     const { productId, quantity } = JSON.parse(event.body);
+    console.log('🔥 Received productId:', productId);
+    console.log('🧮 Received quantity:', quantity);
 
     const priceId = PRICE_MAP[productId];
     if (!priceId) {
+      console.error('❌ Unknown productId:', productId);
       return {
         statusCode: 400,
         headers: {
@@ -60,7 +63,7 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({ url: session.url }),
     };
   } catch (error) {
-    console.error('Stripe error:', error);
+    console.error('💥 Stripe error:', error);
     return {
       statusCode: 500,
       headers: {
