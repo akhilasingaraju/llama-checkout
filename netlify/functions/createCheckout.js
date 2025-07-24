@@ -2,10 +2,13 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 // Map your product LIDs (from Tilda) to Stripe Price IDs
 const PRICE_MAP = {
-  '608434923522': 'price_1RoDF0AWyMUmnKu5gxhyOFk5', // example
-  '889145261572': 'price_1RoDDNAWyMUmnKu5Nm0wmfqB',
-  '376328752612': 'price_1RoU1NAWyMUmnKu5ALa3ffJk',
-  // Add more product LIDs and Stripe Price IDs here
+  '608434923522': 'price_1RoDF0AWyMUmnKu5gxhyOFk5', // Ratnagiri 6
+  '912790715332': 'price_1RoX0zAWyMUmnKu5CHcm0jDD', // Odisha 12
+  '889145261572': 'price_1RoX3mAWyMUmnKu5udLvtytF', // The Mango Drop
+  '867258767462': 'price_1RoX2IAWyMUmnKu5g7IeEPo4', // Heritage Mango Fire
+  '376328752612': 'price_1RoU1NAWyMUmnKu5ALa3ffJk', // Sunrise Preserve
+  '923338722632': 'price_1RoDDNAWyMUmnKu5Nm0wmfqB', // Llama Magazine
+  '198526285452': 'price_1RoX4uAWyMUmnKu5ES4CKCAC', // Mango Body Oil
 };
 
 exports.handler = async (event, context) => {
