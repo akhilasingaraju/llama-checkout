@@ -45,7 +45,7 @@ exports.handler = async (event) => {
         allowed_countries: ['US', 'CA'],
       },
       success_url: `${domain}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${domain}/cancel`,
+      cancel_url: `${body.domain}/`,
       metadata: {
         order_id: orderId || 'guest',
       },
