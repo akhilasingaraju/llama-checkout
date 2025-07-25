@@ -1,7 +1,7 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 exports.handler = async (event) => {
-  // 👇 Handle CORS preflight
+  // ✅ Handle CORS preflight
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,
@@ -14,84 +14,58 @@ exports.handler = async (event) => {
     };
   }
 
-  // Rest of your code...
+  try {
+    const body = JSON.parse(event.body);
+    const { cartItems, domain, orderId } = body;
 
-    let body;
-    try {
-      body = JSON.parse(event.body);
-    } catch (err) {
-      console.error("❌ Error parsing JSON body:", event.body);
-      return {
-        statusCode: 400,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Headers': 'Content-Type'
-        },
-        body: JSON.stringify({ error: "Invalid JSON format" })
-      };
-    }
+    console.log("🛒 Received cart items:", cartItems);
 
-    const { cartItems, domain } = body;
-
-    if (!Array.isArray(cartItems) || cartItems.length === 0) {
-      console.error("❌ Cart is empty or invalid");
-      return {
-        statusCode: 400,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Headers': 'Content-Type'
-        },
-        body: JSON.stringify({ error: "Cart is empty or invalid" })
-      };
-    }
-
-    console.log("🧺 Cart Items:", cartItems);
-
-    const line_items = cartItems.map((item) => ({
+    const lineItems = cartItems.map((item) => ({
       price_data: {
         currency: 'usd',
-        unit_amount: Math.round(item.price * 100), // price in cents
         product_data: {
           name: item.name,
+          description: item.description,
           images: item.images || [],
-          description: item.description || ''
-        }
+          metadata: {
+            product_id: item.id
+          }
+        },
+        unit_amount: Math.round(item.price * 100), // cents
       },
-      quantity: item.quantity
+      quantity: item.quantity,
     }));
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card', 'link'],
-      line_items,
+      line_items: lineItems,
       mode: 'payment',
+      billing_address_collection: 'required',
+      shipping_address_collection: {
+        allowed_countries: ['US', 'CA'],
+      },
       success_url: `${domain}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${domain}/cancel`,
-      billing_address_collection: 'auto',
-      shipping_address_collection: {
-        allowed_countries: ['US', 'CA']
-      }
+      metadata: {
+        order_id: orderId || 'guest',
+      },
     });
-
-    console.log("✅ Stripe session created:", session.url);
 
     return {
       statusCode: 200,
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type'
       },
-      body: JSON.stringify({ url: session.url })
+      body: JSON.stringify({ sessionId: session.id, url: session.url }),
     };
-  } catch (err) {
-    console.error("💥 Stripe error:", err);
-
+  } catch (error) {
+    console.error("❌ Stripe error:", error.message);
     return {
       statusCode: 500,
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type'
       },
-      body: JSON.stringify({ error: err.message })
+      body: JSON.stringify({ error: error.message }),
     };
   }
 };
